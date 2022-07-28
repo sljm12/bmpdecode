@@ -9,6 +9,7 @@
  * @param end 
  * @return uint32_t 
  */
+
 uint32_t extractBytes4(uint8_t* buffer, int start, int end){
     uint8_t number[4] ={0,0,0,0};
 
@@ -27,14 +28,14 @@ uint32_t extractBytes2(uint8_t* buffer, int start){
         number[c]=buffer[c+start];
     }
 
-    return littleToBig2(number);
+    return littleToBig(number,2 );
 }
 
 /**
  * @brief Generic version of changing little to big endian
  * 
- * @param buffer 
- * @param size 
+ * @param buffer An array of uint8 
+ * @param size The size of the uint8 array
  * @return uint32_t 
  */
 uint32_t littleToBig(uint8_t * buffer, int size){
@@ -50,32 +51,16 @@ uint32_t littleToBig(uint8_t * buffer, int size){
     return result;
 }
 
-/**
- * @brief Convert 4 bytes from little to big endian
- * 
- * @param vals 
- * @return uint32_t 
- */
-uint32_t littleToBig4(uint8_t vals[4]){
-    uint32_t results = (uint32_t) 0;
-    results += (uint32_t)vals[3] << 24;
-    results +=(uint32_t)vals[2] << 16;
-    results += (uint32_t)vals[1] << 8;
-    results += vals[0];
-    return results;
-}
 
-uint32_t littleToBig2(uint8_t vals[2]){
-    uint32_t results = (uint32_t) 0;
-    results += (uint32_t)vals[1] << 8;
-    results += vals[0];
-    return results;
-}
-
-void main(){
+int main(){
     uint8_t buffer[54];
 
     FILE* f = fopen("image.bmp","rb");
+    if(f==NULL){
+        printf("Failed to open file");
+        return -1;
+    }
+
     size_t size_read = fread(buffer, 1 ,sizeof(buffer), f);
     printf("Size Read %d\n", size_read);
     int width = extractBytes4(buffer,18,21);
@@ -89,20 +74,28 @@ void main(){
 
     int widthBuffer = width * bpp/8;
     printf("Width Buffer %d\n", widthBuffer);
-
+    /*
     int len =0;
     int counter = 0;
     uint8_t row_buffer[1280];
-    do{
+    while(1){
+        
         len = fread(row_buffer, 1 ,sizeof(row_buffer), f);
         printf("%d\n", len);
-        counter++;
-    }while(len==1280);
+        if(len < 1280){
+            break;
+        }
+        if(len != 0){
+            counter++;
+        }
+    }
     printf("Counter %d\n", counter);
 
     printf("%d\n", row_buffer[0]);
     printf("%d\n", row_buffer[1]);
     printf("%d\n", row_buffer[2]);
     printf("%d\n", row_buffer[3]);
+    */
     fclose(f);
+    return 0;
 }
